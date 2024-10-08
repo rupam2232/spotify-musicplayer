@@ -1,9 +1,11 @@
-let currentsong = new Audio();
-let songList;
-let songul;
-let currfol;
-let currentPlayingElement = null; // To keep track of the currently playing element
+let currentsong = new Audio(); //the song which is currently playing
+let songList; //list of songs of current playing song's folder
+let songul; // DOM li of current playing folder's songs
+let currfol; // name of current playing folder
+let currentPlayingElement = null; // DOM li of current playing song, To keep track of the currently playing element
 
+
+// fetch images of mp3 file
 async function getpicofmp3(mp3Files) {
     let newArray = new Array(mp3Files.length).fill(null); // Initialize the array with null values to maintain order
     let promises = mp3Files.map((url, index) =>
@@ -41,6 +43,7 @@ async function getpicofmp3(mp3Files) {
     return newArray;
 }
 
+// fetch data from song folders and display the folders as card on the webpage
 async function getalbum() {
     let response = await fetch(`/songs/`);
     let html = await response.text();
@@ -78,13 +81,12 @@ async function getalbum() {
     });
 }
 
-
+// handle click event listener on the list of songs in sidebar
 function handleListItemClick(e, index) {
     let playButton = e.querySelector(".libplay");
     let playnowText = e.querySelector(".playnow");
 
     // Reset the previously playing element
-    if (currentsong.paused) { }
     if (currentPlayingElement) {
         currentPlayingElement.querySelector(".libplay").src = "svgs/play.svg";
         currentPlayingElement.querySelector(".playnow").textContent = "Play";
@@ -104,8 +106,7 @@ function handleListItemClick(e, index) {
     playnowText.textContent = "Playing";
 }
 
-
-
+// fetch mp3 song files from current used folder and update the song list of sidebar on webpage
 async function getsong(currentfolder) {
     currfol = currentfolder;
     try {
@@ -116,7 +117,6 @@ async function getsong(currentfolder) {
         let anchors = div.querySelectorAll("a");
         let songs = Array.from(anchors).filter(anchor => anchor.href.endsWith(".mp3")).map(anchor => anchor.href);
         let pictures = await getpicofmp3(songs);
-
         songul = document.querySelector(".songList ul");
         songul.innerHTML = "";
         songs.forEach((song, index) => {
@@ -131,22 +131,8 @@ async function getsong(currentfolder) {
 
         currentPlayingElement = document.querySelector(".songList li");
         document.querySelectorAll(".songList li").forEach((e, index) => {
-            let playButton = e.querySelector(".libplay");
-            let playnowText = e.querySelector(".playnow");
-
             e.addEventListener("click", () => {
                 handleListItemClick(e, index);
-                // if (currentPlayingElement) {
-                //     currentPlayingElement.querySelector(".libplay").src = "play.svg";
-                //     currentPlayingElement.querySelector(".playnow").textContent = "Play";
-                // }
-                // playmusic(e.querySelector(".lekh").innerHTML);
-                // playButton.src = "paused.svg";
-                // playnowText.textContent = "Playing";
-                // currentPlayingElement = e;
-
-                // Update the index for the current playing element
-                // updateCurrentPlayingElement(index);
             });
         });
 
@@ -157,13 +143,17 @@ async function getsong(currentfolder) {
     }
 }
 
+// playmusic and update details regarding current playing song in webpage
 const playmusic = (track, pause = false) => {
     currentsong.src = `${currfol}/` + track;
+    console.log("chole naki?")
     if (!pause) {
         currentsong.play();
+        console.log("cholche")
         document.querySelector('#play').src = "svgs/paused.svg";
         if (currentPlayingElement) {
             currentPlayingElement.querySelector(".libplay").src = "svgs/paused.svg";
+            console.log(currentPlayingElement)
             currentPlayingElement.querySelector(".playnow").textContent = "Playing";
         }
     }
@@ -174,6 +164,7 @@ function playpause(img) {
     img.src = "svgs/paused.svg";
 }
 
+// return second and minute of current playing song 
 function secondsToMinutesSeconds(seconds) {
     if (isNaN(seconds) || seconds < 0) {
         return "00:00";
@@ -183,6 +174,16 @@ function secondsToMinutesSeconds(seconds) {
     return `${String(minutes).padStart(2, '0')}:${String(remainingSeconds).padStart(2, '0')}`;
 }
 
+// after finishing the current song this function autoplay the next song from that folder
+function autoplay() {
+    let index = songList.indexOf(currentsong.src)
+    if(songList[index + 1] !== undefined){
+        currentPlayingElement = songul.childNodes[index + 1]
+        playmusic(songList[index + 1].split(`/${currfol}/`)[1]);
+    }
+}
+
+// main function which is run at the first
 async function main() {
     songList = await getsong("songs/firstsong");
     if (songList.length === 0) return;
@@ -228,6 +229,11 @@ async function main() {
 
     currentsong.addEventListener("ended", () => {
         document.querySelector("#play").src = "svgs/play.svg";
+        if (currentPlayingElement) {
+            currentPlayingElement.querySelector(".libplay").src = "svgs/play.svg";
+            currentPlayingElement.querySelector(".playnow").textContent = "Play";
+        }
+        autoplay();
     });
 
     document.querySelector("#previous").addEventListener("click", () => {
@@ -274,11 +280,6 @@ async function main() {
             document.querySelector("#volrang").value = 10;
         }
     });
-
-
-    // if(currentsong.currentTime === currentsong.duration){
-    //     playmusic()
-    // }
 }
 
 // The function to update the current playing element

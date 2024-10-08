@@ -146,14 +146,11 @@ async function getsong(currentfolder) {
 // playmusic and update details regarding current playing song in webpage
 const playmusic = (track, pause = false) => {
     currentsong.src = `${currfol}/` + track;
-    console.log("chole naki?")
     if (!pause) {
         currentsong.play();
-        console.log("cholche")
         document.querySelector('#play').src = "svgs/paused.svg";
         if (currentPlayingElement) {
             currentPlayingElement.querySelector(".libplay").src = "svgs/paused.svg";
-            console.log(currentPlayingElement)
             currentPlayingElement.querySelector(".playnow").textContent = "Playing";
         }
     }

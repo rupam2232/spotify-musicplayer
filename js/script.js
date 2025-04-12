@@ -45,7 +45,7 @@ async function getpicofmp3(mp3Files) {
 
 // fetch data from song folders and display the folders as card on the webpage
 async function getalbum() {
-    let response = await fetch(`/songs/`);
+    let response = await fetch(`songs/`);
     let html = await response.text();
     let div = document.createElement("div");
     div.innerHTML = html;
@@ -110,7 +110,7 @@ function handleListItemClick(e, index) {
 async function getsong(currentfolder) {
     currfol = currentfolder;
     try {
-        let response = await fetch(`/${currentfolder}/`);
+        let response = await fetch(`${currentfolder}/`);
         let html = await response.text();
         let div = document.createElement("div");
         div.innerHTML = html;
@@ -236,7 +236,7 @@ async function main() {
     document.querySelector("#previous").addEventListener("click", () => {
         let index = songList.indexOf(currentsong.src);
         if (index > 0) {
-            let song = songList[index - 1].split(`/${currfol}/`)[1];
+            let song = songList[index - 1].split(`${currfol}/`)[1];
             playmusic(song);
             updateCurrentPlayingElement(index - 1);
         }
@@ -245,7 +245,7 @@ async function main() {
     document.querySelector("#next").addEventListener("click", () => {
         let index = songList.indexOf(currentsong.src);
         if (index < songList.length - 1) {
-            let song = songList[index + 1].split(`/${currfol}/`)[1];
+            let song = songList[index + 1].split(`${currfol}/`)[1];
             playmusic(song);
             updateCurrentPlayingElement(index + 1);
         }

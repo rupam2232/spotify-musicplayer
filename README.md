@@ -2,10 +2,6 @@
 
 A clone of the Spotify music player built using **HTML**, **CSS**, and **JavaScript**. This app allows users to play music, view song metadata, and navigate through tracks with play/pause, next, and previous buttons.
 
-## Live Demo 🌐
-You can view the live version of this project here:  
-[Spotify Music Player](https://rupam.freewebhostmost.com/)
-
 ## Features ✨
 - Display a list of songs with cover images
 - Play/pause music
